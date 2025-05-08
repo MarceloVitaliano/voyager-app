@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="styles.css">
   <link rel="icon" type="image/png" href="house-icon.png">
   <link rel="apple-touch-icon" href="house-icon.png">
+  <link rel="manifest" href="manifest.json">
 </head>
 <body>
   <header>
@@ -31,23 +32,25 @@
     </section>
 
     <h2>Gastos actuales</h2>
-    <table id="tablaGastos">
-      <thead>
-        <tr>
-          <th>Servicio</th>
-          <th>Total</th>
-          <th>Fecha</th>
-          <th>Marcelo</th>
-          <th>Eli</th>
-          <th>Mauricio</th>
-          <th>Estado</th>
-          <th>Acción</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Los gastos aparecerán aquí -->
-      </tbody>
-    </table>
+    <div class="table-wrapper">
+      <table id="tablaGastos">
+        <thead>
+          <tr>
+            <th>Servicio</th>
+            <th>Total</th>
+            <th>Fecha</th>
+            <th>Marcelo</th>
+            <th>Eli</th>
+            <th>Mauricio</th>
+            <th>Estado</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Los gastos aparecerán aquí -->
+        </tbody>
+      </table>
+    </div>
   </main>
 
   <script src="script.js"></script>
