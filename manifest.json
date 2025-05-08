@@ -1,0 +1,21 @@
+{
+  "name": "VOYAGER - Gastos Compartidos",
+  "short_name": "VOYAGER",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#f4f1ec",
+  "theme_color": "#56776c",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "house-icon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "house-icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
