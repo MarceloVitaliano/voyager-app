@@ -12,12 +12,14 @@ const form = document.getElementById("gastoForm");
 const tabla = document.querySelector("#tablaGastos tbody");
 const roomies = ["Marcelo", "Eli", "Mauricio"];
 
-// 🚨 Solicitar permiso de notificaciones al cargar
-if ('Notification' in window && 'serviceWorker' in navigator) {
-  Notification.requestPermission().then((permission) => {
-    console.log('Permiso de notificaciones:', permission);
-  });
-}
+// ✅ Solicitar permiso solo al primer clic (requerido por iPhone)
+document.addEventListener("click", () => {
+  if ('Notification' in window && Notification.permission !== 'granted') {
+    Notification.requestPermission().then((permission) => {
+      console.log('Permiso de notificaciones:', permission);
+    });
+  }
+}, { once: true });
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -41,7 +43,7 @@ form.addEventListener("submit", async (e) => {
   await addDoc(collection(db, "gastos"), nuevoGasto);
   form.reset();
 
-  // 🔔 Mostrar notificación local
+  // 🔔 Notificación al agregar gasto
   if (Notification.permission === 'granted') {
     navigator.serviceWorker.getRegistration().then((reg) => {
       if (reg) {
