@@ -68,24 +68,28 @@ function mostrarGastos(gastos) {
       else if (Object.values(gasto.pagos).every(v => v)) estado = "pagado";
 
       const fila = document.createElement("tr");
+
+      const checkboxCells = roomies.map(r => `
+        <td>
+          <input type="checkbox" ${gasto.pagos[r] ? "checked" : ""}>
+        </td>
+      `).join("");
+
       fila.innerHTML = `
         <td>${gasto.servicio}</td>
         <td>$${gasto.montoTotal.toFixed(2)}</td>
         <td>${gasto.fecha}</td>
-        ${roomies.map(r => `
-          <td>
-            <input type="checkbox" ${gasto.pagos[r] ? "checked" : ""}>
-          </td>
-        `).join("")}
+        ${checkboxCells}
         <td class="status ${estado}">${estado.toUpperCase()}</td>
         <td><button class="btn-eliminar">Eliminar</button></td>
       `;
 
       tabla.appendChild(fila);
 
-      // ✅ Enlazar botón eliminar
-      const botonEliminar = fila.querySelector(".btn-eliminar");
-      botonEliminar.addEventListener("click", () => eliminarGasto(gasto.id));
+      // ✅ Enlazar botón Eliminar
+      fila.querySelector(".btn-eliminar").addEventListener("click", () => {
+        eliminarGasto(gasto.id);
+      });
 
       // ✅ Enlazar checkboxes
       const checkboxes = fila.querySelectorAll("input[type='checkbox']");
