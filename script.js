@@ -12,6 +12,13 @@ const form = document.getElementById("gastoForm");
 const tabla = document.querySelector("#tablaGastos tbody");
 const roomies = ["Marcelo", "Eli", "Mauricio"];
 
+// 🚨 Solicitar permiso de notificaciones al cargar
+if ('Notification' in window && 'serviceWorker' in navigator) {
+  Notification.requestPermission().then((permission) => {
+    console.log('Permiso de notificaciones:', permission);
+  });
+}
+
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
@@ -33,9 +40,22 @@ form.addEventListener("submit", async (e) => {
 
   await addDoc(collection(db, "gastos"), nuevoGasto);
   form.reset();
+
+  // 🔔 Mostrar notificación local
+  if (Notification.permission === 'granted') {
+    navigator.serviceWorker.getRegistration().then((reg) => {
+      if (reg) {
+        reg.showNotification("Nuevo servicio agregado 💸", {
+          body: `${servicio} fue añadido por un roomie.`,
+          icon: "house-icon.png",
+          badge: "house-icon.png"
+        });
+      }
+    });
+  }
 });
 
-// Escuchar cambios en tiempo real
+// 🔁 Escuchar cambios en tiempo real
 onSnapshot(collection(db, "gastos"), (snapshot) => {
   const gastos = [];
   snapshot.forEach((doc) => {
@@ -86,12 +106,10 @@ function mostrarGastos(gastos) {
 
       tabla.appendChild(fila);
 
-      // ✅ Enlazar botón Eliminar
       fila.querySelector(".btn-eliminar").addEventListener("click", () => {
         eliminarGasto(gasto.id);
       });
 
-      // ✅ Enlazar checkboxes
       const checkboxes = fila.querySelectorAll("input[type='checkbox']");
       checkboxes.forEach((checkbox, i) => {
         const roomie = roomies[i];
