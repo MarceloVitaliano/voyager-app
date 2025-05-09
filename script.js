@@ -59,25 +59,40 @@ function mostrarGastos(gastos) {
   tabla.innerHTML = "";
   const hoy = new Date().toISOString().split("T")[0];
 
-  gastos.sort((a, b) => a.timestamp - b.timestamp).forEach((gasto) => {
-    let estado = "pendiente";
-    if (gasto.fecha < hoy) estado = "vencido";
-    else if (gasto.fecha === hoy) estado = "hoy";
-    else if (Object.values(gasto.pagos).every(v => v)) estado = "pagado";
+  gastos
+    .sort((a, b) => a.timestamp - b.timestamp)
+    .forEach((gasto) => {
+      let estado = "pendiente";
+      if (gasto.fecha < hoy) estado = "vencido";
+      else if (gasto.fecha === hoy) estado = "hoy";
+      else if (Object.values(gasto.pagos).every(v => v)) estado = "pagado";
 
-    const fila = document.createElement("tr");
-    fila.innerHTML = `
-      <td>${gasto.servicio}</td>
-      <td>$${gasto.montoTotal.toFixed(2)}</td>
-      <td>${gasto.fecha}</td>
-      ${roomies.map(r => `
-        <td>
-          <input type="checkbox" ${gasto.pagos[r] ? "checked" : ""} onchange="marcarPago('${gasto.id}', '${r}', this.checked)">
-        </td>
-      `).join("")}
-      <td class="status ${estado}">${estado.toUpperCase()}</td>
-      <td><button onclick="eliminarGasto('${gasto.id}')">Eliminar</button></td>
-    `;
-    tabla.appendChild(fila);
-  });
+      const fila = document.createElement("tr");
+      fila.innerHTML = `
+        <td>${gasto.servicio}</td>
+        <td>$${gasto.montoTotal.toFixed(2)}</td>
+        <td>${gasto.fecha}</td>
+        ${roomies.map(r => `
+          <td>
+            <input type="checkbox" ${gasto.pagos[r] ? "checked" : ""}>
+          </td>
+        `).join("")}
+        <td class="status ${estado}">${estado.toUpperCase()}</td>
+        <td><button>Eliminar</button></td>
+      `;
+      tabla.appendChild(fila);
+
+      // ✅ Funcionalidad del botón eliminar
+      const btn = fila.querySelector("button");
+      btn.addEventListener("click", () => eliminarGasto(gasto.id));
+
+      // ✅ Funcionalidad de los checkboxes
+      const checkboxes = fila.querySelectorAll("input[type='checkbox']");
+      checkboxes.forEach((checkbox, i) => {
+        const roomie = roomies[i];
+        checkbox.addEventListener("change", () => {
+          marcarPago(gasto.id, roomie, checkbox.checked);
+        });
+      });
+    });
 }
