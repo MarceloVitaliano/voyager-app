@@ -1,12 +1,18 @@
+import { db } from "./firebase.js";
+import {
+  collection,
+  addDoc,
+  onSnapshot,
+  updateDoc,
+  deleteDoc,
+  doc
+} from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
 const form = document.getElementById("gastoForm");
 const tabla = document.querySelector("#tablaGastos tbody");
-
 const roomies = ["Marcelo", "Eli", "Mauricio"];
-let gastos = JSON.parse(localStorage.getItem("gastos")) || [];
 
-mostrarGastos();
-
-form.addEventListener("submit", (e) => {
+form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
   const servicio = document.getElementById("servicio").value;
@@ -21,21 +27,39 @@ form.addEventListener("submit", (e) => {
       Marcelo: false,
       Eli: false,
       Mauricio: false
-    }
+    },
+    timestamp: Date.now()
   };
 
-  gastos.push(nuevoGasto);
-  guardarGastos();
-  mostrarGastos();
+  await addDoc(collection(db, "gastos"), nuevoGasto);
   form.reset();
 });
 
-function mostrarGastos() {
-  tabla.innerHTML = "";
+// Escuchar cambios en tiempo real
+onSnapshot(collection(db, "gastos"), (snapshot) => {
+  const gastos = [];
+  snapshot.forEach((doc) => {
+    gastos.push({ id: doc.id, ...doc.data() });
+  });
+  mostrarGastos(gastos);
+});
 
+async function marcarPago(id, roomie, valor) {
+  const ref = doc(db, "gastos", id);
+  const update = {};
+  update[`pagos.${roomie}`] = valor;
+  await updateDoc(ref, update);
+}
+
+async function eliminarGasto(id) {
+  await deleteDoc(doc(db, "gastos", id));
+}
+
+function mostrarGastos(gastos) {
+  tabla.innerHTML = "";
   const hoy = new Date().toISOString().split("T")[0];
 
-  gastos.forEach((gasto, index) => {
+  gastos.sort((a, b) => a.timestamp - b.timestamp).forEach((gasto) => {
     let estado = "pendiente";
     if (gasto.fecha < hoy) estado = "vencido";
     else if (gasto.fecha === hoy) estado = "hoy";
@@ -48,28 +72,12 @@ function mostrarGastos() {
       <td>${gasto.fecha}</td>
       ${roomies.map(r => `
         <td>
-          <input type="checkbox" ${gasto.pagos[r] ? "checked" : ""} onchange="marcarPago(${index}, '${r}')">
+          <input type="checkbox" ${gasto.pagos[r] ? "checked" : ""} onchange="marcarPago('${gasto.id}', '${r}', this.checked)">
         </td>
       `).join("")}
       <td class="status ${estado}">${estado.toUpperCase()}</td>
-      <td><button onclick="eliminarGasto(${index})">Eliminar</button></td>
+      <td><button onclick="eliminarGasto('${gasto.id}')">Eliminar</button></td>
     `;
     tabla.appendChild(fila);
   });
-}
-
-function marcarPago(index, roomie) {
-  gastos[index].pagos[roomie] = !gastos[index].pagos[roomie];
-  guardarGastos();
-  mostrarGastos();
-}
-
-function eliminarGasto(index) {
-  gastos.splice(index, 1);
-  guardarGastos();
-  mostrarGastos();
-}
-
-function guardarGastos() {
-  localStorage.setItem("gastos", JSON.stringify(gastos));
 }
