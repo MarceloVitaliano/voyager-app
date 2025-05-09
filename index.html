@@ -1,89 +1,71 @@
-import { db } from "./firebase.js";
-import {
-  collection,
-  addDoc,
-  onSnapshot,
-  updateDoc,
-  deleteDoc,
-  doc
-} from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VOYAGER | Gastos Compartidos</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" type="image/png" href="house-icon.png">
+  <link rel="apple-touch-icon" href="house-icon.png">
+  <link rel="manifest" href="manifest.json">
+</head>
+<body>
+  <header>
+    VOYAGER - Gastos Compartidos
+  </header>
 
-const form = document.getElementById("gastoForm");
-const tabla = document.querySelector("#tablaGastos tbody");
-const roomies = ["Marcelo", "Eli", "Mauricio"];
+  <main>
+    <section class="form-container">
+      <h2>Nuevo gasto</h2>
+      <form id="gastoForm">
+        <label>Servicio:</label>
+        <input type="text" id="servicio" required>
 
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
+        <label>Monto total:</label>
+        <input type="number" id="monto" required>
 
-  const servicio = document.getElementById("servicio").value;
-  const montoTotal = parseFloat(document.getElementById("monto").value);
-  const fecha = document.getElementById("fecha").value;
+        <label>Fecha límite:</label>
+        <input type="date" id="fecha" required>
 
-  const nuevoGasto = {
-    servicio,
-    montoTotal,
-    fecha,
-    pagos: {
-      Marcelo: false,
-      Eli: false,
-      Mauricio: false
-    },
-    timestamp: Date.now()
-  };
+        <button type="submit">Agregar gasto</button>
+      </form>
+    </section>
 
-  await addDoc(collection(db, "gastos"), nuevoGasto);
-  form.reset();
-});
+    <h2>Gastos actuales</h2>
+    <div class="table-wrapper">
+      <table id="tablaGastos">
+        <thead>
+          <tr>
+            <th>Servicio</th>
+            <th>Total</th>
+            <th>Fecha</th>
+            <th>Marcelo</th>
+            <th>Eli</th>
+            <th>Mauricio</th>
+            <th>Estado</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Los gastos aparecerán aquí -->
+        </tbody>
+      </table>
+    </div>
+  </main>
 
-// Escuchar cambios en tiempo real
-onSnapshot(collection(db, "gastos"), (snapshot) => {
-  const gastos = [];
-  snapshot.forEach((doc) => {
-    gastos.push({ id: doc.id, ...doc.data() });
-  });
-  mostrarGastos(gastos);
-});
+  <!-- Scripts como módulos -->
+  <script type="module" src="firebase.js"></script>
+  <script type="module" src="script.js"></script>
 
-async function marcarPago(id, roomie, valor) {
-  const ref = doc(db, "gastos", id);
-  const update = {};
-  update[`pagos.${roomie}`] = valor;
-  await updateDoc(ref, update);
-}
-
-async function eliminarGasto(id) {
-  await deleteDoc(doc(db, "gastos", id));
-}
-
-function mostrarGastos(gastos) {
-  tabla.innerHTML = "";
-  const hoy = new Date().toISOString().split("T")[0];
-
-  gastos
-    .sort((a, b) => a.timestamp - b.timestamp)
-    .forEach((gasto) => {
-      let estado = "pendiente";
-      if (gasto.fecha < hoy) estado = "vencido";
-      else if (gasto.fecha === hoy) estado = "hoy";
-      else if (Object.values(gasto.pagos).every(v => v)) estado = "pagado";
-
-      const fila = document.createElement("tr");
-      fila.innerHTML = `
-        <td>${gasto.servicio}</td>
-        <td>$${gasto.montoTotal.toFixed(2)}</td>
-        <td>${gasto.fecha}</td>
-        ${roomies.map(r => `
-          <td>
-            <input type="checkbox" ${gasto.pagos[r] ? "checked" : ""} onchange="marcarPago('${gasto.id}', '${r}', this.checked)">
-          </td>
-        `).join("")}
-        <td class="status ${estado}">${estado.toUpperCase()}</td>
-        <td><button onclick="eliminarGasto('${gasto.id}')">Eliminar</button></td>
-      `;
-      tabla.appendChild(fila);
-    });
-}
-
-// 👉 Hacer las funciones visibles desde el HTML
-window.eliminarGasto = eliminarGasto;
-window.marcarPago = marcarPago;
+  <!-- Service Worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js')
+          .then(reg => console.log('Service Worker registrado', reg.scope))
+          .catch(err => console.log('Error al registrar SW:', err));
+      });
+    }
+  </script>
+</body>
+</html>
