@@ -1,17 +1,23 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
 :root {
-  --bg: #f4f1ec;
-  --primary: #56776c;
-  --accent: #a2b59f;
-  --warning: #cc5c5c;
-  --due-soon: #e3a94d;
-  --text: #333;
-  --paid: #9c9c9c;
+  --bg: #f9f9fb;
+  --primary: #4a6fa5;
+  --accent: #8bc6ec;
+  --text: #222;
+  --paid: #4caf50;
+  --vencido: #e57373;
+  --hoy: #f9a825;
+  --border: #ddd;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 body {
   margin: 0;
-  padding: 0;
-  font-family: 'Segoe UI', sans-serif;
+  font-family: 'Poppins', sans-serif;
   background-color: var(--bg);
   color: var(--text);
 }
@@ -21,38 +27,66 @@ header {
   color: white;
   padding: 1rem;
   text-align: center;
-  font-size: 1.4rem;
-  font-weight: bold;
-  letter-spacing: 1px;
+  font-size: 1.5rem;
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 main {
-  padding: 1rem;
-  max-width: 1000px;
-  margin: 0 auto;
+  max-width: 960px;
+  margin: 2rem auto;
+  padding: 0 1rem;
 }
 
 .form-container {
   background: white;
-  border-radius: 8px;
-  padding: 1rem;
-  margin-bottom: 1.5rem;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 h2 {
-  margin-top: 2rem;
   margin-bottom: 1rem;
-  font-size: 1.3rem;
   color: var(--primary);
 }
 
-/* TABLA RESPONSIVA */
+form label {
+  font-weight: 600;
+  display: block;
+  margin-top: 1rem;
+}
+
+input, select {
+  width: 100%;
+  padding: 0.6rem;
+  margin-top: 0.3rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+button {
+  margin-top: 1.2rem;
+  padding: 0.6rem 1.2rem;
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+button:hover {
+  background-color: #3b5d87;
+}
+
 .table-wrapper {
   overflow-x: auto;
   background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 table {
@@ -62,19 +96,19 @@ table {
 }
 
 th, td {
-  padding: 0.8rem;
+  padding: 1rem;
   text-align: left;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--border);
 }
 
 th {
   background-color: var(--accent);
   color: white;
-  font-weight: normal;
+  font-weight: 500;
 }
 
 td.status {
-  font-weight: bold;
+  font-weight: 600;
   text-transform: uppercase;
 }
 
@@ -87,32 +121,24 @@ td.status {
 }
 
 .status.vencido {
-  color: var(--warning);
+  color: var(--vencido);
 }
 
 .status.hoy {
-  color: var(--due-soon);
+  color: var(--hoy);
 }
 
-button {
-  padding: 0.4rem 0.8rem;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  background-color: var(--primary);
-  color: white;
-  font-weight: bold;
-  transition: background-color 0.2s;
-}
+@media (max-width: 768px) {
+  th, td {
+    font-size: 0.9rem;
+    padding: 0.8rem;
+  }
 
-button:hover {
-  background-color: #415d52;
-}
+  header {
+    font-size: 1.2rem;
+  }
 
-input, select {
-  padding: 0.5rem;
-  margin-top: 0.3rem;
-  width: 100%;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  h2 {
+    font-size: 1.1rem;
+  }
 }
