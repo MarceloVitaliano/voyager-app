@@ -78,15 +78,16 @@ function mostrarGastos(gastos) {
           </td>
         `).join("")}
         <td class="status ${estado}">${estado.toUpperCase()}</td>
-        <td><button>Eliminar</button></td>
+        <td><button class="btn-eliminar">Eliminar</button></td>
       `;
+
       tabla.appendChild(fila);
 
-      // ✅ Funcionalidad del botón eliminar
-      const btn = fila.querySelector("button");
-      btn.addEventListener("click", () => eliminarGasto(gasto.id));
+      // ✅ Enlazar botón eliminar
+      const botonEliminar = fila.querySelector(".btn-eliminar");
+      botonEliminar.addEventListener("click", () => eliminarGasto(gasto.id));
 
-      // ✅ Funcionalidad de los checkboxes
+      // ✅ Enlazar checkboxes
       const checkboxes = fila.querySelectorAll("input[type='checkbox']");
       checkboxes.forEach((checkbox, i) => {
         const roomie = roomies[i];
