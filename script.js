@@ -12,7 +12,7 @@ const form = document.getElementById("gastoForm");
 const tabla = document.querySelector("#tablaGastos tbody");
 const roomies = ["Marcelo", "Eli", "Mauricio"];
 
-// ✅ Solicitar permiso solo al primer clic (requerido por iPhone)
+// ✅ Solicitar permiso solo al primer clic (Safari lo requiere)
 document.addEventListener("click", () => {
   if ('Notification' in window && Notification.permission !== 'granted') {
     Notification.requestPermission().then((permission) => {
@@ -43,18 +43,20 @@ form.addEventListener("submit", async (e) => {
   await addDoc(collection(db, "gastos"), nuevoGasto);
   form.reset();
 
-  // 🔔 Notificación al agregar gasto
-  if (Notification.permission === 'granted') {
-    navigator.serviceWorker.getRegistration().then((reg) => {
-      if (reg) {
-        reg.showNotification("Nuevo servicio agregado 💸", {
-          body: `${servicio} fue añadido por un roomie.`,
-          icon: "house-icon.png",
-          badge: "house-icon.png"
-        });
-      }
-    });
-  }
+  // 🔔 Safari fix: retraso para asegurar que notificación sí se dispare
+  setTimeout(() => {
+    if (Notification.permission === 'granted') {
+      navigator.serviceWorker.getRegistration().then((reg) => {
+        if (reg) {
+          reg.showNotification("Nuevo servicio agregado 💸", {
+            body: `${servicio} fue añadido por un roomie.`,
+            icon: "house-icon.png",
+            badge: "house-icon.png"
+          });
+        }
+      });
+    }
+  }, 300);
 });
 
 // 🔁 Escuchar cambios en tiempo real
